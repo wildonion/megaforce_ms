@@ -70,7 +70,7 @@ pub async fn process_connection(mut socket: TcpStream, mut buffer: Vec<u8>, devi
                                         if params.contains_key("NS"){
 											let ns = params["NS"].parse::<i32>().unwrap();
 												if ns >= 4{
-													println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | SENDING GPS DATA TO TRACCAR CAUSE NS IS EQUALS OR MORE THAN 4", device_addr, chrono::Local::now().naive_local());
+													println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | SENDING GPS DATA TO TRACCAR WITH NS EQUALS OR MORE THAN 4", device_addr, chrono::Local::now().naive_local());
 			                                        ///////////// ====================== POST GPS DATA TO INOBI TRACCAR SERVER IF THE NUMBER OF SATTELITES ARE EQUALS OR MORE THAN 4 ======================
 														match reqwest::Client::builder().build(){
 				                                             Ok(client) => {
@@ -82,7 +82,7 @@ pub async fn process_connection(mut socket: TcpStream, mut buffer: Vec<u8>, devi
 				                                       	                         println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | RESPONSE DATA FROM TRACCAR SERVER : {:?}", device_addr, chrono::Local::now().naive_local(), json);          
 				                                                             },
 				                                                             Err(e) => {
-				                                                                 println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | RESPONSE DATA FROM TRACCAR SERVER : {:?}", device_addr, chrono::Local::now().naive_local(), e);
+				                                                                 println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | RESPONSE DATA FROM TRACCAR SERVER WITH ERROR : {:?}", device_addr, chrono::Local::now().naive_local(), e);
 				                                                             }
 				                                                         }
 				                                                     },
@@ -108,7 +108,7 @@ pub async fn process_connection(mut socket: TcpStream, mut buffer: Vec<u8>, devi
                                         
                                         match reqwest::Client::builder().build(){
                                                            Ok(client) => {
-                                                               let url = format!("http://78.38.56.34:8282/transport/bus?{}", data);
+                                                               let url = format!("http://localhost:8282/transport/bus?{}", data);
                                                                match client
                                                                    .post(url)
                                                                    .header(header::AUTHORIZATION, "Bearer ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LmV5SjBhVzFsSWpveE5UTXdNVEF4T0RNM0xDSnpZMjl3WlhNaU9sc2lkSEpoYm5Od2IzSjBYM1Z1YVhRaUxDSjBjbUZ1YzNCdmNuUmZkVzVwZENoa1pXWmhkV3gwS1NKZExDSnBZWFFpT2pFMU16QXdPVGs1TWpRc0ltbHpjeUk2SW1seWMyRnNZV0prUUdkdFlXbHNMbU52YlNKOS45X1RlUGw3SGowckhEemhlMWpfal9mWkRCNWN2SjRyOXJ6R2ZDM1FhT0lJ")
