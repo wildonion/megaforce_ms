@@ -1,4 +1,7 @@
 
+
+
+
 use std::collections::HashMap;
 use std::str;
 use std::sync::Arc;
@@ -68,35 +71,40 @@ pub async fn process_connection(mut socket: TcpStream, mut buffer: Vec<u8>, devi
                                         
                                         ///////////// =======================================================================================================================
                                         if params.contains_key("NS"){
-											let ns = params["NS"].parse::<i32>().unwrap();
-												if ns >= 4{
-													println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | SENDING GPS DATA TO TRACCAR WITH NS EQUALS OR MORE THAN 4", device_addr, chrono::Local::now().naive_local());
-			                                        ///////////// ====================== POST GPS DATA TO INOBI TRACCAR SERVER IF THE NUMBER OF SATTELITES ARE EQUALS OR MORE THAN 4 ======================
-														match reqwest::Client::builder().build(){
-				                                             Ok(client) => {
-				                                                 let url = format!("http://localhost:5055/?{}", data); 
-				                                                 match client.post(url).send().await{ // NOTE - client future won't solve unless we await on it and once it gets solved we'll fall into the following arms
-				                                                     Ok(res) => {
-				                                                         match res.text().await{
-				                                                             Ok(json) => {
-				                                       	                         println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | RESPONSE DATA FROM TRACCAR SERVER : {:?}", device_addr, chrono::Local::now().naive_local(), json);          
-				                                                             },
-				                                                             Err(e) => {
-				                                                                 println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | RESPONSE DATA FROM TRACCAR SERVER WITH ERROR : {:?}", device_addr, chrono::Local::now().naive_local(), e);
-				                                                             }
-				                                                         }
-				                                                     },
-				                                                     Err(e) => {
-				                                                         println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | TRACCAR SERVER STATUS : {:?}", device_addr, chrono::Local::now().naive_local(), e);
-				                                                     }
-				                                                 }
-				                                             },
-				                                             Err(e) => {
-				                                                 println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | HTTP CLIENT OBJECT STATUS : {:?}", device_addr, chrono::Local::now().naive_local(), e);
-				                                             }
-				                                         }
-			                                        ///////////// ====================== POST GPS DATA TO INOBI PYTHON SERVER ======================		
-												}		
+                                            let ns = params["NS"];
+                                            if !ns.is_empty(){
+                                                let ns = params["NS"].parse::<i32>().unwrap();
+                                                    if ns >= 4{
+                                                        println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | SENDING GPS DATA TO TRACCAR WITH NS EQUALS OR MORE THAN 4", device_addr, chrono::Local::now().naive_local());
+                                                        ///////////// ====================== POST GPS DATA TO INOBI TRACCAR SERVER IF THE NUMBER OF SATTELITES ARE EQUALS OR MORE THAN 4 ======================
+                                                            match reqwest::Client::builder().build(){
+                                                                Ok(client) => {
+                                                                    let url = format!("http://localhost:5055/?{}", data); 
+                                                                    match client.post(url).send().await{ // NOTE - client future won't solve unless we await on it and once it gets solved we'll fall into the following arms
+                                                                        Ok(res) => {
+                                                                            match res.text().await{
+                                                                                Ok(json) => {
+                                                                                    println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | RESPONSE DATA FROM TRACCAR SERVER : {:?}", device_addr, chrono::Local::now().naive_local(), json);          
+                                                                                },
+                                                                                Err(e) => {
+                                                                                    println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | RESPONSE DATA FROM TRACCAR SERVER WITH ERROR : {:?}", device_addr, chrono::Local::now().naive_local(), e);
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        Err(e) => {
+                                                                            println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | TRACCAR SERVER STATUS : {:?}", device_addr, chrono::Local::now().naive_local(), e);
+                                                                        }
+                                                                    }
+                                                                },
+                                                                Err(e) => {
+                                                                    println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | HTTP CLIENT OBJECT STATUS : {:?}", device_addr, chrono::Local::now().naive_local(), e);
+                                                                }
+                                                            }
+                                                        ///////////// ====================== POST GPS DATA TO INOBI PYTHON SERVER ======================		
+                                                    }
+                                                } else{
+                                                    println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | GPS DATA HAVE EMPTY NS PARAM", device_addr, chrono::Local::now().naive_local());
+                                                }
 											} else{
 												println!("[+] GPS : {} | CURRENT SERVER TIME : {:?} | STATUS : ✅ | GPS DATA DON'T HAVE NS PARAM", device_addr, chrono::Local::now().naive_local());
 											}
